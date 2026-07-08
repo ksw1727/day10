@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>위험성평가 통합 관리 시스템 — 기획안 (PRD_origin_Rev1 기반)</title>
+<style>
+  :root{
+    --ink:#1a1f2b; --ink2:#4a5162; --ink3:#8a90a0;
+    --bg:#f6f7f9; --card:#ffffff; --line:#e3e6ec;
+    --accent:#2456c4; --accent-bg:#eef3fd;
+    --g5:#b3261e; --g4:#d9622b; --g3:#e5a500;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"Pretendard","Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.65; font-size:15.5px;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px 96px;}
+
+  /* ---------- header ---------- */
+  header.hero{
+    background:linear-gradient(135deg,#16233f 0%,#24417c 60%,#2456c4 100%);
+    color:#fff; padding:56px 24px 48px; margin-bottom:32px;
+  }
+  header.hero .wrap{padding-bottom:0;}
+  .hero .kicker{font-size:13px; letter-spacing:.14em; opacity:.75; text-transform:uppercase; margin-bottom:10px;}
+  .hero h1{font-size:32px; line-height:1.3; font-weight:800;}
+  .hero p.sub{margin-top:14px; font-size:15px; opacity:.85; max-width:760px;}
+  .hero .meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px;}
+  .hero .meta span{
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+    padding:4px 12px; border-radius:999px; font-size:12.5px;
+  }
+
+  /* ---------- TOC ---------- */
+  nav.toc{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px 24px; margin-bottom:44px;
+  }
+  nav.toc strong{display:block; font-size:13px; color:var(--ink3); letter-spacing:.1em; margin-bottom:12px;}
+  nav.toc ol{list-style:none; display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:6px 18px;}
+  nav.toc a{
+    display:flex; gap:8px; align-items:baseline; text-decoration:none; color:var(--ink2);
+    font-size:14px; padding:5px 8px; border-radius:8px;
+  }
+  nav.toc a:hover{background:var(--accent-bg); color:var(--accent);}
+  nav.toc a .no{font-weight:700; color:var(--accent); font-size:13px; min-width:18px;}
+
+  /* ---------- sections ---------- */
+  section{margin-bottom:64px;}
+  .sec-head{display:flex; align-items:center; gap:14px; margin-bottom:8px;}
+  .sec-head .num{
+    background:var(--accent); color:#fff; font-weight:800; font-size:15px;
+    width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    flex:none;
+  }
+  .sec-head h2{font-size:23px; font-weight:800;}
+  .sec-lead{color:var(--ink2); margin-bottom:22px; max-width:820px;}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; margin-bottom:18px;}
+  .card h3{font-size:16.5px; margin-bottom:12px; display:flex; align-items:center; gap:8px;}
+  .card h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none;}
+  .muted{color:var(--ink3); font-size:13px;}
+
+  /* stat tiles */
+  .tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin:6px 0 4px;}
+  .tile{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:16px 16px 14px;
+  }
+  .tile .v{font-size:26px; font-weight:800; letter-spacing:-.01em; color:var(--ink);}
+  .tile .v small{font-size:14px; font-weight:600; color:var(--ink2); margin-left:2px;}
+  .tile .l{font-size:12.5px; color:var(--ink2); margin-top:4px; line-height:1.45;}
+  .tile.goal{border-top:3px solid var(--accent);}
+  .tile.law{border-top:3px solid #b3261e;}
+  .tile.scale{border-top:3px solid #6b7280;}
+
+  /* tables */
+  table{width:100%; border-collapse:collapse; font-size:14px; background:var(--card);}
+  .tbl-scroll{overflow-x:auto; border:1px solid var(--line); border-radius:12px; margin-bottom:16px;}
+  th{
+    background:#f0f2f6; text-align:left; padding:10px 12px; font-size:13px;
+    color:var(--ink2); border-bottom:1px solid var(--line); white-space:nowrap;
+  }
+  td{padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  td b.fr{color:var(--accent); font-weight:700; white-space:nowrap;}
+
+  .badge{
+    display:inline-block; font-size:11.5px; font-weight:700; padding:2px 9px; border-radius:999px;
+    background:#eef1f6; color:var(--ink2); white-space:nowrap;
+  }
+  .badge.p0{background:#fdecea; color:#a1332b;}
+  .badge.p1{background:#fdf3e0; color:#8a5a10;}
+  .badge.blue{background:var(--accent-bg); color:var(--accent);}
+  .badge.done{background:#e5f3ec; color:#1c6b46;}
+  .badge.hold{background:#f1eafc; color:#6a3fb5;}
+  .badge.drop{background:#f0f2f6; color:#7a8090; text-decoration:line-through;}
+
+  /* flow */
+  .flow{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:10px 0;}
+  .flow .step{
+    background:var(--card); border:1.5px solid var(--accent); color:var(--accent);
+    border-radius:10px; padding:8px 14px; font-size:13.5px; font-weight:700; text-align:center;
+  }
+  .flow .step.gray{border-color:#b6bcc9; color:var(--ink2); font-weight:600;}
+  .flow .step.warn{border-color:#b3261e; color:#b3261e;}
+  .flow .arr{color:var(--ink3); font-weight:700;}
+  .flow .step small{display:block; font-weight:500; font-size:11.5px; color:var(--ink3); margin-top:1px;}
+
+  /* risk matrix */
+  .matrix-wrap{display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start;}
+  .matrix{border-collapse:collapse; font-size:13px; width:auto;}
+  .matrix th{background:transparent; border:none; text-align:center; padding:6px; color:var(--ink2);}
+  .matrix td{
+    border:2px solid #fff; width:74px; height:52px; text-align:center; font-weight:800;
+    border-radius:6px; padding:2px;
+  }
+  .matrix td span{display:block; font-size:10.5px; font-weight:600; margin-top:1px;}
+  .m5{background:#f6c9c5; color:#7c1a14;}
+  .m4{background:#f8dcc8; color:#8a3d10;}
+  .m3{background:#faecc2; color:#7a5a08;}
+  .m2{background:#fdf6d8; color:#6e6320;}
+  .m1{background:#d9efe4; color:#1c5c40;}
+  .grade-legend{flex:1; min-width:320px;}
+  .grade-legend table{font-size:13.5px;}
+  .gchip{display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:7px; vertical-align:-1px;}
+
+  /* wireframes */
+  .wf{
+    border:1.5px solid #c6ccd8; border-radius:12px; background:#fbfcfe;
+    padding:12px; font-size:12px; color:var(--ink2); margin-top:10px;
+  }
+  .wf .bar{
+    background:#e8ecf4; border-radius:6px; padding:7px 10px; display:flex; gap:8px; align-items:center;
+    font-weight:700; color:var(--ink); flex-wrap:wrap;
+  }
+  .wf .bar .chip{background:#fff; border:1px solid #c6ccd8; border-radius:999px; padding:1px 9px; font-size:11px; font-weight:600;}
+  .wf .cols{display:flex; gap:10px; margin-top:10px; align-items:stretch;}
+  .wf .pane{background:#fff; border:1px dashed #b6bcc9; border-radius:8px; padding:10px; min-height:150px;}
+  .wf .pane h5{font-size:11.5px; color:var(--accent); margin-bottom:8px; letter-spacing:.03em;}
+  .wf .row{background:#f1f3f8; border-radius:5px; padding:5px 8px; margin-bottom:6px; line-height:1.4;}
+  .wf .row.hot{background:#fdecea; border:1px solid #f0b6b1;}
+  .wf .btn{background:var(--accent); color:#fff; border-radius:6px; padding:3px 12px; font-weight:700; font-size:11px;}
+  .wf .btn.ghost{background:#fff; color:var(--accent); border:1px solid var(--accent);}
+  .wf-caption{font-size:12.5px; color:var(--ink3); margin-top:8px;}
+  .wf-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  .phone{
+    width:230px; border:2px solid #c6ccd8; border-radius:20px; background:#fff; padding:12px 10px; margin:0 auto;
+  }
+  .phone .row{font-size:11px;}
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:820px){ .two-col,.wf-grid{grid-template-columns:1fr;} .wf .cols{flex-direction:column;} }
+
+  ul.tight{padding-left:20px;}
+  ul.tight li{margin-bottom:6px;}
+  .note{
+    background:var(--accent-bg); border-left:4px solid var(--accent); border-radius:0 10px 10px 0;
+    padding:12px 16px; font-size:14px; color:#20355f; margin:14px 0;
+  }
+  .note.warn{background:#fdf3f2; border-color:#b3261e; color:#6e2a25;}
+
+  footer{color:var(--ink3); font-size:12.5px; text-align:center; margin-top:48px; border-top:1px solid var(--line); padding-top:20px;}
+  @media print{
+    header.hero{background:#24417c;}
+    nav.toc{display:none;}
+    section{page-break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Project Proposal · 기획안</div>
+    <h1>위험성평가 통합 관리 시스템<br>개발 기획안</h1>
+    <p class="sub">엑셀·수기 중심의 위험성평가 관리를 시스템으로 일원화한다. 자사 근로자와 협력사 근로자가 함께 쓰는 개방형 시스템에서 <b>작성 → 결재 → 공유·서명 → 개선조치 → 3년 기록</b>의 전체 사이클을 완결한다.</p>
+    <div class="meta">
+      <span>기준 문서: PRD_origin_Rev1 (v2.2)</span>
+      <span>작성일: 2026-07-08</span>
+      <span>절차서: KDHC-SHP-04 R7 (절차서 우선 원칙)</span>
+      <span>법규: 산안법 §36 · 시행규칙 §37 · 고시 2024-76호 · 중처법 시행령 §4</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <strong>목차</strong>
+  <ol>
+    <li><a href="#s1"><span class="no">1</span>문제 / 수치화</a></li>
+    <li><a href="#s2"><span class="no">2</span>개발 목표</a></li>
+    <li><a href="#s3"><span class="no">3</span>화면 설계</a></li>
+    <li><a href="#s4"><span class="no">4</span>역할</a></li>
+    <li><a href="#s5"><span class="no">5</span>협업 방법</a></li>
+    <li><a href="#s6"><span class="no">6</span>사용 기술</a></li>
+    <li><a href="#s7"><span class="no">7</span>환경</a></li>
+    <li><a href="#s8"><span class="no">8</span>필요한 개념</a></li>
+    <li><a href="#s9"><span class="no">9</span>데이터</a></li>
+    <li><a href="#s10"><span class="no">10</span>이전 아이디어 목록</a></li>
+  </ol>
+</nav>
+
+<!-- ============ 1. 문제 / 수치화 ============ -->
+<section id="s1">
+  <div class="sec-head"><div class="num">1</div><h2>문제 / 수치화</h2></div>
+  <p class="sec-lead">현재 위험성평가는 엑셀과 수기 문서로 관리된다. 복수 사업장·다수 협력사의 평가 이력, 결재, 개선조치 이행을 일관되게 추적할 수 없고, 법정 기한 누락과 증빙 산출 지연의 리스크가 상시 존재한다.</p>
+
+  <div class="card">
+    <h3><span class="dot"></span>핵심 문제 4가지</h3>
+    <ul class="tight">
+      <li><b>이력 추적 불가</b> — 사업장 20곳, 협력사 200개사의 평가서가 개별 엑셀 파일로 흩어져 있어 누가·언제·무엇을 평가하고 조치했는지 통합 조회가 불가능하다.</li>
+      <li><b>법정 기한 누락 위험</b> — 정기평가(매 1년), 수시평가(사유 발생 시 작업 개시 전), 최초평가(성립 후 1개월 내 착수)의 도래·초과를 사람이 수동 관리한다.</li>
+      <li><b>개선조치 이행 블랙박스</b> — 감소대책의 담당자·기한·증빙·재평가가 문서에만 남아 이행 여부를 확인하려면 담당자에게 일일이 물어야 한다.</li>
+      <li><b>증빙 산출 지연</b> — 중대재해처벌법·감독 대응 시 평가서 + 결재 이력 + 참여·서명 기록 + 조치 이력을 취합하는 데 며칠이 걸린다. 위험성평가 기록은 중처법 시행령 §4 대응의 <b>핵심 증빙</b>이다.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>법정 의무 (지켜야 하는 숫자)</h3>
+    <div class="tiles">
+      <div class="tile law"><div class="v">3<small>년</small></div><div class="l">평가 결과·조치사항 기록 보존 의무 (시행규칙 §37)</div></div>
+      <div class="tile law"><div class="v">1<small>년</small></div><div class="l">정기평가 실시 주기 (고시 §15)</div></div>
+      <div class="tile law"><div class="v">1<small>개월</small></div><div class="l">최초평가 — 사업장 성립 후 착수 기한</div></div>
+      <div class="tile law"><div class="v">6<small>대 사유</small></div><div class="l">수시평가 트리거 — 작업 개시 <b>전</b> 실시 의무</div></div>
+      <div class="tile law"><div class="v">월·주<small>·일</small></div><div class="l">상시평가 사이클 — 이행 시 수시+정기 갈음</div></div>
+      <div class="tile law"><div class="v">100<small>%</small></div><div class="l">참여·공유 대상 = 고용형태·국적 불문 모든 근로자 (협력사 포함, 고시 2024-76호)</div></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3><span class="dot"></span>관리 대상 규모 (NFR-001~002)</h3>
+      <div class="tiles" style="grid-template-columns:repeat(2,1fr);">
+        <div class="tile scale"><div class="v">3,000<small>명</small></div><div class="l">등록 사용자</div></div>
+        <div class="tile scale"><div class="v">20<small>개</small></div><div class="l">사업장·현장</div></div>
+        <div class="tile scale"><div class="v">200<small>개사</small></div><div class="l">협력사(수급업체)</div></div>
+        <div class="tile scale"><div class="v">1만<small>건/년</small></div><div class="l">평가서 작성량</div></div>
+        <div class="tile scale"><div class="v">50만<small>장/년</small></div><div class="l">첨부 사진·파일</div></div>
+        <div class="tile scale"><div class="v">300<small>명</small></div><div class="l">동시 접속 기준</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>성공 지표 (도달해야 하는 숫자)</h3>
+      <div class="tiles" style="grid-template-columns:repeat(2,1fr);">
+        <div class="tile goal"><div class="v">0<small>건</small></div><div class="l">법정 평가 기한 초과 (G1)</div></div>
+        <div class="tile goal"><div class="v">90<small>%↑</small></div><div class="l">기한 내 개선조치 완료율 (G2)</div></div>
+        <div class="tile goal"><div class="v">95<small>%↑</small></div><div class="l">공유 후 근로자 열람 서명률 (G5)</div></div>
+        <div class="tile goal"><div class="v">5<small>분</small></div><div class="l">증빙 패키지 산출 소요 시간 (G4)</div></div>
+        <div class="tile goal"><div class="v">7<small>일</small></div><div class="l">수시 트리거 → 평가 완료 리드타임</div></div>
+        <div class="tile goal"><div class="v">60<small>%↑</small></div><div class="l">MAU / 협력사 계정 활성률 80%↑</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. 개발 목표 ============ -->
+<section id="s2">
+  <div class="sec-head"><div class="num">2</div><h2>개발 목표</h2></div>
+  <p class="sec-lead">HAZOP·KRAS·JSA·CHARM 4개 기법의 위험성평가 전 과정을 하나의 웹앱으로 일원화한다. 핵심 설계 원칙은 <b>“공통 평가 엔진 + 기법별 템플릿”</b> — 결재·이행관리·공유·기록·알림·일정은 공통 워크플로 하나를 쓰고, 기법별로는 시트(입력 폼)와 위험도 산정 로직만 달리한다.</p>
+
+  <div class="card">
+    <h3><span class="dot"></span>제품 목표</h3>
+    <div class="flow">
+      <div class="step">① 평가 일원화<small>작성→결재→공유→기록 온라인 완결</small></div>
+      <div class="arr">＋</div>
+      <div class="step">② 개선조치 추적<small>담당·기한·증빙·재평가</small></div>
+      <div class="arr">＋</div>
+      <div class="step">③ 법정 주기 자동 관리<small>최초·정기·수시·상시</small></div>
+      <div class="arr">＋</div>
+      <div class="step">④ 본사 통합 관제<small>전 사업장·협력사 대시보드</small></div>
+    </div>
+    <div class="tbl-scroll" style="margin-top:14px;">
+      <table>
+        <tr><th style="width:56px;">목표</th><th>내용</th><th>측정 방법</th></tr>
+        <tr><td><b>G1</b></td><td>법정 평가 기한 누락 제로화</td><td>정기평가 기한 초과 건수, 수시 트리거 후 미실시 건수</td></tr>
+        <tr><td><b>G2</b></td><td>개선조치 이행률 가시화·향상</td><td>기한 내 조치 완료율 90% 이상</td></tr>
+        <tr><td><b>G3</b></td><td>협력사 평가 제출·승인 체계화</td><td>협력사 제출률, 평균 승인 소요일</td></tr>
+        <tr><td><b>G4</b></td><td>중처법·감독 대응 증빙 즉시 산출</td><td>평가서·조치이력·참여기록 조회/출력 5분 이내</td></tr>
+        <tr><td><b>G5</b></td><td>근로자 참여·공유 의무 이행</td><td>열람 서명률 대상자의 95% 이상</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>단계별 릴리스 계획 (§10)</h3>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th style="width:150px;">Phase</th><th>범위</th><th>완료 기준</th></tr>
+        <tr>
+          <td><b>Phase 1 — 코어</b></td>
+          <td>KRAS·JSA 작성 + 전자결재 + 조치 이행 + 공유·서명 + 3년 기록. 입력 가이드라인, 고위험 자동알림, 수급업체 이행점검 체크리스트, JSA 현장확인 포함</td>
+          <td>파일럿 1개 사업장에서 정기(KRAS)·협력사(JSA) 평가의 작성→결재→공유·서명→조치 완료 사이클이 <b>시스템만으로 완결</b>되고 증빙 패키지가 출력된다</td>
+        </tr>
+        <tr>
+          <td><b>Phase 2 — 확장</b></td>
+          <td>HAZOP·CHARM 기법, 상시평가 모드(월·주 사이클), 위험요인 제보, 연간 실시계획, 표준모델, 도급 안전보건정보 제공</td>
+          <td>파일럿 사업장의 정기+수시 운영 안정 후 상시평가 모드 전환</td>
+        </tr>
+        <tr>
+          <td><b>Phase 3 — 고도화</b></td>
+          <td>통계·리포트, 요인 라이브러리 고도화, QR 발행, 본사 계획 전개, 산보위 보고, 대결(대리결재) 등 운영 편의</td>
+          <td>—</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="note">기술 스택은 PRD에서 의도적으로 미지정(설계 단계 결정 사항)이다. 본 기획안 §6은 <b>제안</b>이며, 세부 실행 PRD 수립 시 확정한다.</div>
+</section>
+
+<!-- ============ 3. 화면 설계 ============ -->
+<section id="s3">
+  <div class="sec-head"><div class="num">3</div><h2>화면 설계</h2></div>
+  <p class="sec-lead">총 <b>39개 화면</b>을 4개 그룹으로 설계한다(PRD §7). 웹+모바일 반응형 단일 웹앱이며, 근로자 대상 화면(서명·제보·내 조치·현장확인)은 모바일 우선으로 설계한다.</p>
+
+  <div class="card">
+    <h3><span class="dot"></span>화면 그룹 구성 (Information Architecture)</h3>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th>그룹</th><th>화면 수</th><th>주요 화면</th></tr>
+        <tr><td><b>공통</b></td><td>4</td><td>S-01 로그인 · S-02 역할별 홈 · S-03 알림함 · S-04 내 정보</td></tr>
+        <tr><td><b>평가·결재</b></td><td>9</td><td>S-10 평가서 목록 · S-11 공통 헤더 · S-12~15 기법별 시트(KRAS/JSA/HAZOP/CHARM) · S-16 상세(읽기) · S-17 결재함 · S-18 협력사 제출함</td></tr>
+        <tr><td><b>일정·조치·공유</b></td><td>12</td><td>S-20 평가 캘린더 · S-21 수시 트리거 등록 · S-22 상시 사이클 보드 · S-23/24 개선조치 · S-25 공유 발행 · S-26 열람·서명(모바일) · S-27/28 위험요인 제보 · S-29 JSA 현장확인(모바일) · S-35 연간 실시계획 · S-36 수시 이행점검</td></tr>
+        <tr><td><b>관제·설정</b></td><td>14</td><td>S-30 본사 대시보드 · S-31 사업장 대시보드 · S-32 협력사 대시보드 · S-33 통계·리포트 · S-34 증빙 패키지 출력 · S-40~48 조직/사용자/협력사/매트릭스/결재선/감사로그/표준모델/도급정보 설정</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>평가서 상태 머신 (전 기법 공통)</h3>
+    <div class="flow">
+      <div class="step gray">작성중 Draft</div><div class="arr">→</div>
+      <div class="step">결재중<small>검토→승인</small></div><div class="arr">→</div>
+      <div class="step">승인완료</div><div class="arr">→</div>
+      <div class="step">공유중<small>열람·서명 진행</small></div><div class="arr">→</div>
+      <div class="step">조치진행<small>개선조치 이행</small></div><div class="arr">→</div>
+      <div class="step">완료 Closed</div>
+    </div>
+    <div class="flow">
+      <div class="step warn">반려<small>사유 필수 → 작성중 복귀</small></div>
+      <div class="arr">·</div>
+      <div class="step gray">개정 Revision<small>승인완료 이후 수정은 새 버전으로만</small></div>
+    </div>
+    <p class="muted">승인완료 이후 본문 수정 불가. 위험성 5점 이상 항목에 감소대책이 없으면 결재 상신 자체가 차단된다(FR-ASMT-003, 서버 측 강제).</p>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>회사 표준 4×4 위험성 매트릭스 — 전 화면 공통 시각 언어</h3>
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <tr><th></th><th colspan="4">발생빈도(가능성) →</th></tr>
+        <tr><th style="text-align:right;">중대성 4</th><td class="m2">4<span>Ⅱ보통</span></td><td class="m3">8<span>Ⅲ약간높음</span></td><td class="m4">12<span>Ⅳ높음</span></td><td class="m5">16<span>Ⅴ매우높음</span></td></tr>
+        <tr><th style="text-align:right;">3</th><td class="m1">3<span>Ⅰ낮음</span></td><td class="m2">6<span>Ⅱ보통</span></td><td class="m3">9<span>Ⅲ약간높음</span></td><td class="m4">12<span>Ⅳ높음</span></td></tr>
+        <tr><th style="text-align:right;">2</th><td class="m1">2<span>Ⅰ낮음</span></td><td class="m1">4<span>Ⅰ낮음</span></td><td class="m2">6<span>Ⅱ보통</span></td><td class="m3">8<span>Ⅲ약간높음</span></td></tr>
+        <tr><th style="text-align:right;">1</th><td class="m1">1<span>Ⅰ낮음</span></td><td class="m1">2<span>Ⅰ낮음</span></td><td class="m1">3<span>Ⅰ낮음</span></td><td class="m2">4<span>Ⅱ보통</span></td></tr>
+      </table>
+      <div class="grade-legend">
+        <table>
+          <tr><th>등급 (점수)</th><th>조치 기한 (절차서 별표1.1 표4)</th></tr>
+          <tr><td><span class="gchip" style="background:#f6c9c5;"></span><b>Ⅴ 매우높음</b> 13~16</td><td><b>즉시</b> 개선 (즉시 작업중지 포함)</td></tr>
+          <tr><td><span class="gchip" style="background:#f8dcc8;"></span><b>Ⅳ 높음</b> 10~12</td><td>신속하게 — <b>1~2개월</b> 이내</td></tr>
+          <tr><td><span class="gchip" style="background:#faecc2;"></span><b>Ⅲ 약간높음</b> 7~9</td><td>가급적 빨리 — <b>3~6개월</b> 이내</td></tr>
+          <tr><td><span class="gchip" style="background:#fdf6d8;"></span><b>Ⅱ 보통</b> 5~6</td><td>계획적 — 정기보수공사 또는 <b>1년</b> 이내</td></tr>
+          <tr><td><span class="gchip" style="background:#d9efe4;"></span><b>Ⅰ 낮음</b> 1~4</td><td>허용 가능 — 필요에 따라 (의무 아님)</td></tr>
+        </table>
+        <p class="muted" style="margin-top:8px;">위험성 = 빈도 × 강도 (CHARM은 유해성 × 노출수준). <b>5점 이상 = 허용 불가능 → 감소대책 필수.</b> 색상은 텍스트 라벨과 항상 병기한다(색약 대응, NFR-011).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>핵심 화면 와이어프레임 ① — S-13 JSA 시트 (3단 구성)</h3>
+    <div class="wf">
+      <div class="bar">
+        <span class="chip">P1-JSA-2026-0042</span> 배관 교체 작업
+        <span class="chip" style="background:var(--accent-bg);color:var(--accent);border-color:var(--accent);">수시</span>
+        <span class="chip">작성중</span>
+        <span style="flex:1;"></span>
+        <span class="btn ghost">임시저장</span>
+        <span class="btn" style="opacity:.5;">결재 상신 🔒</span>
+      </div>
+      <div style="background:#fdecea;border-radius:6px;padding:5px 10px;margin-top:8px;font-size:11.5px;color:#8a2f28;">⚠ 신규 작업 트리거: 배관 교체 · 작업 개시 예정일 D-3 — 개시일까지 승인 필요 (도급 작업 경보)</div>
+      <div class="cols">
+        <div class="pane" style="flex:0 0 200px;">
+          <h5>작업단계 트리 (드래그 정렬)</h5>
+          <div class="row">① 작업구역 격리 <span style="float:right;color:#1c5c40;font-weight:700;">Ⅰ</span></div>
+          <div class="row" style="border:1.5px solid var(--accent);">② 기존 배관 절단 <span style="float:right;color:#7c1a14;font-weight:700;">Ⅴ</span></div>
+          <div class="row">③ 신규 배관 설치 <span style="float:right;color:#8a3d10;font-weight:700;">Ⅳ</span></div>
+          <div class="row" style="color:#9aa0ae;">④ 누수 시험 — 미평가</div>
+          <div class="row" style="text-align:center;background:#fff;border:1px dashed #b6bcc9;">+ 단계 추가</div>
+        </div>
+        <div class="pane" style="flex:1;">
+          <h5>선택 단계 상세 — ② 기존 배관 절단</h5>
+          <div class="row">단계명(동사형) · 설명 · 사용 장비(태그)</div>
+          <div class="row hot">요인: 잔류 증기 분출 · 화상 │ 빈도 4 × 강도 4 = <b>16 Ⅴ매우높음</b> │ 감소대책 <b style="color:#b3261e;">*필수 미입력</b></div>
+          <div class="row">요인: 회전 절단기 접촉 │ 3 × 3 = 9 Ⅲ약간높음 │ 대책: 방호덮개 (공학적)</div>
+          <div class="row" style="background:#fff;border:1px dashed #b6bcc9;text-align:center;">+ 요인 행 추가 — 빈도×강도는 4×4 그리드 팝오버로 선택</div>
+        </div>
+      </div>
+    </div>
+    <p class="wf-caption">① 상단 요약바(번호·실시유형·상태 배지, 5점 이상 대책 미입력 시 상신 버튼 잠금+사유 툴팁) ② 좌측 스텝 트리(단계별 최고 등급 배지, 10개 초과 시 중분류 2계층) ③ 우측 단계 상세(요인 행 테이블, 5점 이상 행 붉은 강조). 모바일은 아코디언 카드 1단 전환 + 풀스크린 그리드 모달 + 카메라 즉시 촬영.</p>
+  </div>
+
+  <div class="wf-grid">
+    <div class="card">
+      <h3><span class="dot"></span>② S-30 본사 통합 대시보드</h3>
+      <div class="wf">
+        <div class="bar">본사 관제 <span class="chip">기간</span><span class="chip">사업장</span><span class="chip">기법</span></div>
+        <div class="cols">
+          <div class="pane" style="flex:1;">
+            <h5>4대 지표 카드 (클릭 시 드릴다운)</h5>
+            <div class="row">① 평가 수행률·일정 — 정기 초과 <b style="color:#b3261e;">2건</b> · 수시 진행 5건</div>
+            <div class="row">② 고위험 현황 — Ⅴ~Ⅳ 잔존 <b style="color:#b3261e;">14건</b></div>
+            <div class="row">③ 조치 이행률 — 완료 87% · 지연 9건</div>
+            <div class="row">④ 협력사 제출 — 제출률 92% · 미제출 6개사</div>
+          </div>
+        </div>
+      </div>
+      <p class="wf-caption">사업장별 카드/표 + 경보(기한 초과·미이행) 중심. 모든 수치는 해당 목록으로 드릴다운(FR-DASH-003).</p>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>③ S-26 결과 열람·서명 (모바일 우선)</h3>
+      <div class="wf" style="display:flex;justify-content:center;background:#f1f3f8;">
+        <div class="phone">
+          <div class="row" style="background:#e8ecf4;font-weight:700;">배관 교체 작업 — 요약</div>
+          <div class="row">주요 위험요인 · 위험등급 <b style="color:#7c1a14;">Ⅴ</b></div>
+          <div class="row">감소대책 · 근로자 준수사항</div>
+          <div class="row" style="background:#fff;border:1px dashed #b6bcc9;">원문 평가서 보기</div>
+          <div class="row" style="background:var(--accent);color:#fff;text-align:center;font-weight:700;">✍ 터치 서명으로 열람 확인</div>
+        </div>
+      </div>
+      <p class="wf-caption">360px 폭 완전 동작, 3탭 이내 서명 완료(NFR-004/011). 서명 일시·서명자·평가서 버전이 법정 증빙으로 기록.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. 역할 ============ -->
+<section id="s4">
+  <div class="sec-head"><div class="num">4</div><h2>역할</h2></div>
+  <p class="sec-lead">절차서 5장(책임과 권한) 기준의 <b>8개 페르소나</b> 체계. 시스템 권한(Role)은 조직 스코프(전사 &gt; 사업장 &gt; 부서/공정)와 조합되어 접근 범위가 결정되고, 협력사는 자기 업체 데이터만 접근한다(타 협력사 문서는 목록에도 미노출).</p>
+
+  <div class="card">
+    <h3><span class="dot"></span>페르소나 8인 (결재·보고 계층 순)</h3>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th>ID</th><th>페르소나</th><th>환경</th><th>핵심 역할</th></tr>
+        <tr><td><b>P1</b></td><td>본사 주관부서 담당자</td><td>PC</td><td>전사 실시계획 수립·전개, 이행점검, 전 사업장 관제, 경영책임자 보고 자료</td></tr>
+        <tr><td><b>P8</b></td><td>안전보건관리책임자 (지사장)</td><td>PC</td><td>총괄 관리, 실시계획·결과 <b>최종 승인</b>, 적정성 최종 확인(반기 환류)</td></tr>
+        <tr><td><b>P2</b></td><td>안전관리관 (사업장 안전 스태프)</td><td>PC</td><td>실시계획 수립·결과 작성·보고, 조치결과 반기 취합, 지도·조언, 산보위 보고</td></tr>
+        <tr><td><b>P7</b></td><td>관리감독자 — 부장</td><td>PC+모바일</td><td>평가·감소대책·조치결과의 <b>확인·승인</b>(전결), 협력사 평가 이행 확인</td></tr>
+        <tr><td><b>P3</b></td><td>관리감독자 — 차·팀장</td><td>PC+모바일</td><td>평가 실시 <b>실무</b>(요인 파악~대책 실행), 협력사 평가 검토·보완요구, 결과 공유</td></tr>
+        <tr><td><b>P4</b></td><td>자사 근로자</td><td>모바일</td><td>평가 전 과정 참여, 조치결과 작성, 열람·서명, 위험요인 제보</td></tr>
+        <tr><td><b>P5</b></td><td>협력사 관리자 (현장소장/안전담당)</td><td>PC+모바일</td><td>자체 평가(주로 JSA) 작성·제출, 반려 반영·재제출, 소속 근로자 등록</td></tr>
+        <tr><td><b>P6</b></td><td>협력사 근로자</td><td>모바일</td><td>결과 확인·서명, 작업단계별 현장확인 체크, 위험요인 제보</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>결재·보고 계층 (디폴트 결재선 — 2026-07-08 결정 7)</h3>
+    <p class="muted" style="margin-bottom:8px;">자사 평가서·감소대책·조치결과</p>
+    <div class="flow">
+      <div class="step">차·팀장 P3<small>작성·실시 (근로자 P4 참여)</small></div><div class="arr">→</div>
+      <div class="step">부장 P7<small>확인·승인 (전결)</small></div><div class="arr">→</div>
+      <div class="step gray">안전관리관 P2<small>결과 취합·보고</small></div><div class="arr">→</div>
+      <div class="step gray">지사장 P8<small>적정성 최종 확인 (반기)</small></div>
+    </div>
+    <p class="muted" style="margin:10px 0 8px;">협력사 평가 (도급 시)</p>
+    <div class="flow">
+      <div class="step">협력사 관리자 P5<small>작성·제출</small></div><div class="arr">→</div>
+      <div class="step">차·팀장 P3<small>검토 — 이행점검 체크리스트</small></div><div class="arr">→</div>
+      <div class="step">부장 P7<small>확인</small></div>
+    </div>
+    <ul class="tight" style="margin-top:10px;">
+      <li>연간 실시계획·결과 보고: 안전관리관(P2) 작성 → 지사장(P8) 승인</li>
+      <li><b>Ⅴ 매우높음(13~16점)</b> 포함 평가서: 지사장(P8) <b>상향 승인</b> 추가 (FR-APRV-006)</li>
+      <li>한 사용자가 복수 역할 가능. HAZOP 등 팀 평가의 평가팀장·서기·간사·분야별 위원은 평가서 단위 참여자 역할(시스템 Role과 별개)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 5. 협업 방법 ============ -->
+<section id="s5">
+  <div class="sec-head"><div class="num">5</div><h2>협업 방법</h2></div>
+  <p class="sec-lead">이 프로젝트의 협업은 세 층위로 나뉜다 — ① 문서(PRD) 중심의 요구사항 협업, ② 개발팀 내부 협업, ③ 현업(안전부서·법무·현장)과의 확인 협업.</p>
+
+  <div class="card">
+    <h3><span class="dot"></span>① 문서 중심 협업 — PRD가 단일 진실 원천(SSOT)</h3>
+    <ul class="tight">
+      <li><b>PRD_origin_Rev1(v2.2)</b>을 요구사항의 원본으로 삼고, 모든 기능은 <b>FR-ID</b>(예: FR-ASMT-003)로 추적한다. 구현 이슈·테스트 케이스에 FR-ID를 연결해 요구사항 커버리지를 관리한다.</li>
+      <li><b>절차서 우선 원칙</b>: 회사 절차서(KDHC-SHP-04 R7)와 PRD가 충돌하면 절차서 기준을 채택하고, 절차서에 없는 시스템 요구(검증 규칙·화면·데이터 관리)는 PRD를 유지한다(§5.2.3).</li>
+      <li><b>결정 기록 관리</b>: 기준 차이 항목은 별도 문서(PRD-지침서_기준차이_확인필요사항.md)로 정리해 일자 기입 결정(2026-07-08, 9개 항목)으로 종결하고, 개정분은 문서 내 색상 표시(🔵)로 리뷰 가능하게 남긴다.</li>
+      <li><b>오픈 이슈 보드</b>: 미결 사항은 PRD §13 오픈 이슈 표로 관리 — 담당·다음 조치를 명시하고 해결 시 취소선+해결 버전을 기록한다.</li>
+    </ul>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3><span class="dot"></span>② 개발팀 협업</h3>
+      <ul class="tight">
+        <li><b>버전 관리</b>: Git + GitHub. 브랜치 전략은 GitHub Flow(main 보호 + feature 브랜치 + PR)</li>
+        <li><b>코드 리뷰</b>: 모든 PR은 리뷰 승인 후 병합. PR 설명에 대응 FR-ID·화면 ID(S-xx) 명시</li>
+        <li><b>이슈 트래킹</b>: GitHub Issues/Projects — Phase 1~3 마일스톤과 매핑</li>
+        <li><b>화면 설계</b>: Figma로 S-01~S-48 와이어프레임 → 디자인 확정 후 구현</li>
+        <li><b>진행 공유</b>: 데일리 스탠드업(15분) + 주간 스프린트 리뷰</li>
+        <li><b>수용 기준 테스트</b>: URL 직접 접근 차단 등 권한 테스트를 수용 기준에 포함(NFR-006)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>③ 현업 확인 협업</h3>
+      <ul class="tight">
+        <li><b>안전부서</b>: 상시평가 ‘일 단위 주지’ 갈음 요건 해석(이슈 #4), 기법 범위 편입(이슈 #11)</li>
+        <li><b>법무</b>: 전자서명 증빙력 수준 — 터치 서명 vs 본인인증 결합(이슈 #2), 협력사 근로자 개인정보 동의 절차(이슈 #3)</li>
+        <li><b>현장 운영</b>: JSA 현장확인 서명 주체 방식(이슈 #10), 평가서 번호 체계·종이 문서 소급 등록(이슈 #5)</li>
+        <li><b>공정안전 담당</b>: HAZOP 회의록·PSM 문서 세트 연동 범위 인터뷰(이슈 #6) → Phase 2 설계 반영</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">제품 자체도 협업 도구다 — 전자결재(작성→검토→승인), 협력사 제출·반려·재제출 플로우, 공유 발행·열람 서명이 시스템 안에서 도급인·수급인 간 협업 기록으로 남아 법정 증빙이 된다.</div>
+</section>
+
+<!-- ============ 6. 사용 기술 ============ -->
+<section id="s6">
+  <div class="sec-head"><div class="num">6</div><h2>사용 기술 (제안)</h2></div>
+  <p class="sec-lead">PRD는 기술 스택을 지정하지 않는다(NFR §6 註 — 설계 단계 결정 사항). 아래는 비기능 요구사항(규모·성능·모바일·보존)을 근거로 한 <b>제안 스택</b>이다.</p>
+
+  <div class="tbl-scroll">
+    <table>
+      <tr><th style="width:130px;">계층</th><th style="width:230px;">제안 기술</th><th>선정 근거 (PRD 요구 연결)</th></tr>
+      <tr><td><b>프론트엔드</b></td><td>React + TypeScript + Tailwind CSS</td><td>단일 웹앱으로 웹+모바일 반응형 대응(§1.4). 4개 기법 시트를 공통 컴포넌트 + 기법별 템플릿으로 조립(§1.3 구조 원칙). 360px 완전 동작·이미지 지연 로딩(NFR-004)</td></tr>
+      <tr><td><b>백엔드</b></td><td>Node.js (NestJS) REST API</td><td>모든 API에서 서버 측 스코프·역할 검증(NFR-006). 상태 머신 전이 검증(5점 이상 대책 누락 시 상신 차단)을 서버가 최종 방어선으로 강제(FR-ASMT-003)</td></tr>
+      <tr><td><b>데이터베이스</b></td><td>PostgreSQL (+ JSONB)</td><td>HazardItem을 “공통 컬럼 + 기법별 JSON 확장”으로 설계해 공통 엔진이 기법과 무관하게 동작(§8 모델링 원칙). 승인 시점 스냅숏·매트릭스 버전 보존</td></tr>
+      <tr><td><b>캐시·세션</b></td><td>Redis</td><td>세션/토큰 만료 정책(NFR-005), 알림 배지, 대시보드 사전 집계(NFR-002: 10초 이내)</td></tr>
+      <tr><td><b>파일 스토리지</b></td><td>S3 호환 오브젝트 스토리지</td><td>첨부 연 50만 장(사진 위주, NFR-001), 모바일 카메라 직접 업로드(FR-ASMT-008)</td></tr>
+      <tr><td><b>문서 출력</b></td><td>HTML→PDF 렌더러(Playwright) + 엑셀(SheetJS)</td><td>평가서 PDF·엑셀 출력(FR-ASMT-009), 증빙 패키지 일괄 출력(FR-REC-004), PSM 첨부 양식(FR-ASMT-H-002)</td></tr>
+      <tr><td><b>배치·스케줄러</b></td><td>스케줄러(cron) + 잡 큐</td><td>정기 도래 D-60/30/7 알림(FR-SCHD-002), 도급 수시평가 개시일 미승인 일일 경보(FR-SCHD-004), 조치 기한 D-3·초과 알림(FR-ACT-006)</td></tr>
+      <tr><td><b>인증·보안</b></td><td>JWT + 비밀번호 해시(bcrypt)</td><td>5회 실패 잠금·비밀번호 정책(FR-ORG-008), 모바일 자동 로그인 토큰, 권한 변경 감사 로그(NFR-005)</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 7. 환경 ============ -->
+<section id="s7">
+  <div class="sec-head"><div class="num">7</div><h2>환경</h2></div>
+  <p class="sec-lead">사용자 실행 환경과 시스템 운영 환경의 기준은 비기능 요구사항(NFR-001~011)으로 확정되어 있다.</p>
+
+  <div class="two-col">
+    <div class="card">
+      <h3><span class="dot"></span>사용자 환경</h3>
+      <ul class="tight">
+        <li><b>플랫폼</b>: 웹 + 모바일 반응형 <b>단일 웹앱</b> — 네이티브 앱 없음</li>
+        <li><b>브라우저</b>: 최신 Chrome / Edge / Safari + 모바일 Safari / Chrome. <b>IE 미지원</b> (NFR-010)</li>
+        <li><b>모바일</b>: 근로자 대상 화면(공유·서명, 제보, 내 조치, 현장확인)은 <b>360px 폭 완전 동작</b> (NFR-004)</li>
+        <li><b>네트워크</b>: 현장 저속(3G 수준)에서 공유 화면 5초 이내 로딩 — 이미지 지연 로딩</li>
+        <li><b>접근성</b>: 큰 글씨·3탭 이내 서명 완료 동선, 위험등급 색상에 텍스트 라벨 병기(색약 대응, NFR-011)</li>
+        <li><b>언어</b>: 한국어 (다국어는 향후 과제)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>운영·보안 환경</h3>
+      <ul class="tight">
+        <li><b>성능</b>: 일반 화면 P95 3초 이내, 동시 접속 300명, 대시보드 10초 이내 또는 사전 집계 (NFR-002)</li>
+        <li><b>가용성</b>: 업무시간(06:00–20:00) 가용률 <b>99.5%</b>, 계획 점검은 야간 공지 후 (NFR-003)</li>
+        <li><b>백업·복구</b>: 일 1회 이상 백업, RPO 24시간 / RTO 8시간 (NFR-008)</li>
+        <li><b>데이터 보존</b>: 평가·결재·서명·조치·감사 기록 <b>3년 이상 불변 보존</b> — 보존 기한 내 삭제 기능 자체를 제공하지 않음 (FR-REC-002)</li>
+        <li><b>보안</b>: 전 API 서버 측 스코프·역할 검증, 협력사 간 데이터 격리 필수, URL 직접 접근 차단 테스트 (NFR-006)</li>
+        <li><b>개인정보</b>: 수집 최소화(이름·소속·연락처·서명), 법정 보존 기록은 파기보다 보존 우선 (NFR-007)</li>
+        <li><b>배포 환경(제안)</b>: 개발 → 스테이징 → 운영 3단계 분리, 운영 반영은 야간 배포</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. 필요한 개념 ============ -->
+<section id="s8">
+  <div class="sec-head"><div class="num">8</div><h2>필요한 개념</h2></div>
+  <p class="sec-lead">개발·기획 참여자가 공유해야 하는 도메인 지식. 법규 3종 + 평가 기법 4종 + 운영 개념으로 구성된다.</p>
+
+  <div class="card">
+    <h3><span class="dot"></span>법·제도</h3>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th style="width:240px;">근거</th><th>시스템에 요구하는 것</th></tr>
+        <tr><td>산업안전보건법 <b>제36조</b></td><td>유해·위험요인 파악 → 위험성 평가·개선 의무, 근로자 <b>전 과정 참여</b></td></tr>
+        <tr><td>시행규칙 <b>제37조</b></td><td>요인·결정 내용·조치 내용·사전조사 정보의 <b>3년 기록·보존</b></td></tr>
+        <tr><td>고시 <b>제2024-76호</b> (위험성평가 지침)</td><td>실시 유형 4종(최초·정기·수시·상시), 참여·공유 대상 = 협력사·외국인 포함 <b>모든 근로자</b>, 감소대책 우선순위, 결과 게시·주지</td></tr>
+        <tr><td>중대재해처벌법 시행령 <b>제4조</b></td><td>평가 절차 마련·실시 + 경영책임자 보고 → 반기 점검 의무 갈음. 평가 기록이 <b>핵심 증빙</b></td></tr>
+        <tr><td>회사 절차서 <b>KDHC-SHP-04 R7</b></td><td>등급 명칭(Ⅴ~Ⅰ)·조치기한·결재 계층·표준모델·이행점검 등 실무 기준 — <b>PRD와 충돌 시 절차서 우선</b></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>평가 기법 4종 — 용도가 달라 병행 운영 (서로 대체 불가)</h3>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th>기법</th><th>용도</th><th>구조</th><th>주 작성자</th></tr>
+        <tr><td><b>KRAS</b></td><td>정기 사업장 위험성평가 (연 1회 / 상시 월 사이클)</td><td>부서·공정 &gt; 작업·설비 행 테이블</td><td>차·팀장 P3</td></tr>
+        <tr><td><b>JSA</b></td><td>작업(Job) 단위 작업위험성평가 — 최초·정기·수시 공용, 신규 작업은 착수 전 필수</td><td>작업 &gt; 단계(Step) &gt; 단계별 요인</td><td>차·팀장 P3 / <b>협력사 P5</b></td></tr>
+        <tr><td><b>HAZOP</b></td><td>PSM 공정안전자료용 공정위험성평가 (팀 검토 회의 기반)</td><td>공정 &gt; 검토구간(Node) &gt; 이탈(가이드워드×공정변수)</td><td>P3 + 평가팀</td></tr>
+        <tr><td><b>CHARM</b></td><td>저장·취급 화학물질 위험성평가</td><td>부서 &gt; 화학물질 행 (유해성×노출수준 자동 산정)</td><td>차·팀장 P3</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3><span class="dot"></span>평가 운영 개념</h3>
+      <ul class="tight">
+        <li><b>실시 유형 4종</b> — 최초(성립 1개월 내 착수) / 정기(매 1년) / 수시(6대 사유, 작업 개시 전) / 상시(월·주·일 — 이행 시 수시+정기 갈음)</li>
+        <li><b>감소대책 우선순위</b> — 본질적(제거·대체) &gt; 공학적 &gt; 관리적 &gt; 보호구. 관리적·보호구만 선택한 고위험 항목에는 상위 대책 검토 경고</li>
+        <li><b>잔여 위험성 재평가</b> — 조치 완료 후 재산정, 여전히 5점 이상이면 추가 대책 요구</li>
+        <li><b>아차사고</b> — 부상으로 이어지지 않았으나 가능성이 있던 사건. 수시 트리거이자 상시 파악 대상</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>도급·기록 개념</h3>
+      <ul class="tight">
+        <li><b>도급인/수급인</b> — 자사(도급인)는 협력사(수급인) 평가를 확인할 의무. 제출 → 검토(이행점검 체크리스트) → 확인 플로우가 의무 이행 기록</li>
+        <li><b>표준모델</b> — 작업 유형별 표준 평가 템플릿(요인·대책 세트). 반기 이행점검으로 실사용 평가서를 점검해 개정하는 피드백 루프</li>
+        <li><b>스냅숏 보존</b> — 승인 시점의 평가서 전체(적용 매트릭스 버전 포함)를 고정 보존. 이후 설정 변경이 과거 문서에 영향을 주지 않음</li>
+        <li><b>스코프 격리</b> — 전사 &gt; 사업장 &gt; 부서 계층 + 협력사 Partner 키 이중 격리</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. 데이터 ============ -->
+<section id="s9">
+  <div class="sec-head"><div class="num">9</div><h2>데이터 (필요한 데이터 · 수집 방법)</h2></div>
+  <p class="sec-lead">데이터는 4개 그룹으로 나뉜다 — 조직 마스터, 설정·참조 데이터, 평가 트랜잭션, 운영·증빙 기록. 각 그룹의 수집 방법이 다르다.</p>
+
+  <div class="card">
+    <h3><span class="dot"></span>핵심 엔티티 구조 (PRD §8)</h3>
+    <div class="flow">
+      <div class="step gray">Company / Site / Dept<small>조직 트리 (3단계)</small></div>
+      <div class="arr">＋</div>
+      <div class="step gray">Job · Chemical · Partner<small>평가 대상·협력사 마스터</small></div>
+      <div class="arr">→</div>
+      <div class="step">Assessment<small>공통 헤더 + 기법·유형·상태·기준버전</small></div>
+      <div class="arr">→</div>
+      <div class="step">HazardItem<small>요인 행 = 공통 컬럼 + 기법별 확장</small></div>
+      <div class="arr">→</div>
+      <div class="step">Action<small>개선조치 과제 (담당·기한·증빙·재평가)</small></div>
+    </div>
+    <div class="flow">
+      <div class="step gray">ApprovalFlow / Step<small>결재 이력</small></div><div class="arr">·</div>
+      <div class="step gray">SharePublication / Acknowledgement<small>공유 발행·열람 서명</small></div><div class="arr">·</div>
+      <div class="step gray">RiskMatrixConfig<small>매트릭스 버전</small></div><div class="arr">·</div>
+      <div class="step gray">TriggerEvent / ScheduleRule / OngoingCycle<small>일정·트리거</small></div><div class="arr">·</div>
+      <div class="step gray">AuditLog<small>감사 로그</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>데이터별 수집 방법</h3>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th style="width:170px;">데이터</th><th>수집 방법</th><th style="width:190px;">근거 FR</th></tr>
+        <tr>
+          <td><b>조직·사용자</b></td>
+          <td>관리자가 사업장·부서 트리 등록, 자사 사용자 등록·초대(임시 비밀번호 발급). 협력사 근로자는 <b>협력사 관리자가 직접 등록</b>(국적·고용형태 무관). 엑셀 대량 업로드 지원</td>
+          <td><b class="fr">FR-ORG-001~006, 009</b></td>
+        </tr>
+        <tr>
+          <td><b>평가 대상 마스터</b></td>
+          <td>작업(Job)·설비·화학물질을 사업장별 등록. 화학물질은 물질명·CAS·노출기준·GHS 분류·<b>MSDS 파일</b>·월 취급량·유소견자 여부 포함</td>
+          <td><b class="fr">FR-ASMT-C-001</b></td>
+        </tr>
+        <tr>
+          <td><b>설정·참조 데이터<br>(절차서 디폴트 탑재)</b></td>
+          <td>시스템에 사전 내장 후 관리자 수정형: 4×4 축 정의문, Ⅴ~Ⅰ 등급표·조치기한, 유해·위험요인 분류(6대분류 43소분류), 표준 공정분류, H-code 유해성 매핑표, HAZOP 이탈·원인 예시 라이브러리, JSA 요인 파악 22항목 점검표. 변경은 <b>버전 관리</b></td>
+          <td><b class="fr">FR-CFG-002~005, 008</b></td>
+        </tr>
+        <tr>
+          <td><b>평가 트랜잭션</b></td>
+          <td>현장 사용자가 웹·모바일에서 직접 작성. 행 단위 사진은 <b>모바일 카메라 즉시 촬영 업로드</b>. 과거 승인 평가서·표준모델 복제로 재사용(작성 부담 최소화)</td>
+          <td><b class="fr">FR-ASMT-001~008, 014</b></td>
+        </tr>
+        <tr>
+          <td><b>현장 발생 데이터</b></td>
+          <td>① 위험요인 제보(전 근로자, 사진+텍스트) ② 유해위험요인 파악 조사표 4종(순회점검·청취조사·안전보건자료·체크리스트) ③ JSA 작업일별 현장확인 체크(작업전/작업중 × 작업자/감독자) ④ 작업환경측정 결과 입력 — 조사표·제보의 요인을 평가서 행으로 가져오기 지원</td>
+          <td><b class="fr">FR-SHRE-005, FR-ASMT-012, FR-ASMT-J-005, FR-ASMT-C-003</b></td>
+        </tr>
+        <tr>
+          <td><b>증빙·감사 기록</b></td>
+          <td>시스템 자동 수집 — 결재 이력, 서명(일시·서명자·문서 버전), 승인 시점 스냅숏, 모든 상태 변경의 행위자·타임스탬프. <b>수정·삭제 불가, 3년 이상 보존</b></td>
+          <td><b class="fr">FR-REC-001~004, NFR-009</b></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="note warn">데이터 무결성 원칙 — ① 위험성 5점 이상 + 대책 없음 → 결재 상신 API가 검증 오류 반환(서버 강제) ② 승인 후 본문 불변, 변경은 개정(새 버전) ③ 계정 삭제 금지: 퇴사·계약종료는 비활성화 처리하되 작성자·서명자 기록 보존.</div>
+</section>
+
+<!-- ============ 10. 이전 아이디어 목록 ============ -->
+<section id="s10">
+  <div class="sec-head"><div class="num">10</div><h2>이전 아이디어 목록</h2></div>
+  <p class="sec-lead">PRD는 v1.0 → v2.2까지 6단계로 진화했다. 검토 후 <b>교체·폐기된 아이디어</b>, <b>범위에서 제외한 아이디어</b>, <b>보류 중인 아이디어</b>를 기록해 같은 논의가 반복되지 않게 한다.</p>
+
+  <div class="card">
+    <h3><span class="dot"></span>버전 진화 이력</h3>
+    <div class="flow">
+      <div class="step gray">v1.0<small>초안</small></div><div class="arr">→</div>
+      <div class="step gray">v1.1<small>회사 표준 4×4 · 5등급 반영</small></div><div class="arr">→</div>
+      <div class="step gray">v1.5<small>3일 MVP 프로토타입 실행계획 정합화</small></div><div class="arr">→</div>
+      <div class="step gray">v2.0<small>MVP 스키마 삭제 · 절차서 요구 병합</small></div><div class="arr">→</div>
+      <div class="step gray">v2.1<small>페르소나 8인 체계 재정의</small></div><div class="arr">→</div>
+      <div class="step">v2.2 Rev1<small>절차서 우선 전환 · 9개 결정 확정</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="dot"></span>교체·폐기된 아이디어 (2026-07-08 결정 반영)</h3>
+    <div class="tbl-scroll">
+      <table>
+        <tr><th>이전 아이디어</th><th>결정</th><th>현재 기준</th></tr>
+        <tr><td><span class="badge drop">등급 명칭: 매우위험/위험/다소위험/위험성존재/허용가능</span></td><td><span class="badge done">절차서 채택 (결정 9)</span></td><td>Ⅴ 매우높음 ~ Ⅰ 낮음 (로마자+명칭). 구 명칭은 설정 옵션으로만 유지</td></tr>
+        <tr><td><span class="badge drop">JSA = 수시평가 전용 기법</span></td><td><span class="badge done">절차서 채택</span></td><td>최초·정기·수시 <b>공용</b>. 신규 작업 수시 트리거 자동 연계는 유지</td></tr>
+        <tr><td><span class="badge drop">Ⅲ등급 조치기한 1개월</span></td><td><span class="badge done">절차서 채택</span></td><td>가급적 빨리 3~6개월 (사업장 설정으로 단축 가능). 등급별 기한 전면 절차서 별표1.1 표4로 교체</td></tr>
+        <tr><td><span class="badge drop">기준 충돌 시 PRD 우선</span></td><td><span class="badge done">전환 (§5.2.3)</span></td><td><b>절차서 우선</b> — 시스템 고유 요구만 PRD 유지</td></tr>
+        <tr><td><span class="badge drop">비도급 수시평가에도 개시일 미승인 경보</span></td><td><span class="badge done">결정 4</span></td><td>경보는 <b>도급 작업에만</b> 적용. 비도급은 등록·연결 기능만 지원</td></tr>
+        <tr><td><span class="badge drop">3일 MVP 전용 스키마·API·폴더 구조 (구 §8.1~8.2)</span></td><td><span class="badge done">v2.0 삭제</span></td><td>본 문서는 요구사항 원본(origin)으로 유지, 구현 상세는 별도 실행 PRD로 분리</td></tr>
+        <tr><td><span class="badge drop">관리감독자 단일 역할</span></td><td><span class="badge done">v2.1 재정의</span></td><td>부장(P7, 확인·승인)과 차·팀장(P3, 실시 실무)으로 분리 + 지사장(P8) 신설</td></tr>
+        <tr><td><span class="badge drop">수급업체 공유 수단: 공문·전자계약시스템 검토</span></td><td><span class="badge done">결정 8 · 이슈 #9 종결</span></td><td>시스템 발행·열람 확인 기록을 기본 수단으로 확정 (공문 병행은 운영 사항)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3><span class="dot"></span>범위 제외 아이디어 (§11 Out of Scope)</h3>
+      <ul class="tight">
+        <li><span class="badge">제외</span> TBM(작업 전 안전점검회의) 관리 — 확인 체크만 지원</li>
+        <li><span class="badge">제외</span> 안전교육 · 작업허가서 · 순회점검 모듈 (접점만 유지)</li>
+        <li><span class="badge">향후</span> 다국어(영어·베트남어) — 1차는 한국어</li>
+        <li><span class="badge">향후</span> 이메일·SMS·카카오 알림톡 — 시스템 내 알림만</li>
+        <li><span class="badge">향후</span> 사내 SSO·인사시스템 연동 — 등록·초대 방식 채택</li>
+        <li><span class="badge">제외</span> 네이티브 모바일 앱 — 웹 반응형으로 대응</li>
+        <li><span class="badge">제외</span> 외부 시스템(안전꼼꼼e 등) 연동·인정제도 서식</li>
+        <li><span class="badge">향후</span> AI 위험요인 자동 추천 — 라이브러리 데이터 축적 후 검토</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>보류·미해결 이슈 (§13)</h3>
+      <ul class="tight">
+        <li><span class="badge hold">보류</span> <b>#11</b> 체크리스트법·K-PSR·CA 기법 편입 — 유일한 결정 보류 항목(결정 2), 제품 오너·안전부서 협의로 결정</li>
+        <li><span class="badge hold">검토</span> <b>#2</b> 전자서명 증빙력 — 터치 서명 vs 본인인증 결합 (법무)</li>
+        <li><span class="badge hold">검토</span> <b>#3</b> 협력사 근로자 개인정보 수집·동의 절차</li>
+        <li><span class="badge hold">검토</span> <b>#4</b> 상시평가 ‘일 단위 주지’ 시스템 외 운영 시 갈음 요건 해석</li>
+        <li><span class="badge hold">검토</span> <b>#5</b> 평가서 번호 체계·종이 문서 소급 등록 정책</li>
+        <li><span class="badge hold">검토</span> <b>#6</b> HAZOP 회의록·PSM 문서 연동 범위 (Phase 2 전 인터뷰)</li>
+        <li><span class="badge hold">검토</span> <b>#8</b> 표준모델 vs 요인 라이브러리·JSA 템플릿의 일원화 설계</li>
+        <li><span class="badge hold">검토</span> <b>#10</b> JSA 현장확인 서명 주체 — 작업자 개인 체크 vs 감독자 대표 체크</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  위험성평가 통합 관리 시스템 기획안 · 기준 문서 PRD_origin_Rev1 (v2.2, 2026-07-08) · 절차서 KDHC-SHP-04 R7 우선 원칙 적용
+</footer>
+
+</div>
+</body>
+</html>
