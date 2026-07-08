@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="위험성평가 통합 관리 시스템 — AI Pioneer 해커톤 기획안(보강판). 1일차 기획안을 2일차 학습(전처리·하네스·문서 작업)으로 재점검해 보강하고, 9월 착수 체크리스트를 포함합니다.">
+  <title>위험성평가 통합 관리 시스템 | 기획안 보강판 · 착수 준비</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap");
+
+    :root {
+      --page: #ffffff;
+      --card: #ffffff;
+      --ink: #0d0a07;
+      --muted: #4b463f;
+      --soft: #8d8882;
+      --line: #7c766e;
+      --line-soft: #e6e2da;
+      --green: #52705a;
+      --blue: #3d5a80;
+      --stone: #746a5d;
+      --red: #a04a3c;
+      --tint-green: rgba(82, 112, 90, 0.08);
+      --tint-blue: rgba(61, 90, 128, 0.08);
+      --tint-stone: rgba(116, 106, 93, 0.10);
+      --dot: #e6e2da;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+      --max: 1120px;
+      --read: 780px;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--page); scroll-behavior: smooth; }
+    body {
+      margin: 0; color: var(--ink); background: var(--page);
+      background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+      background-size: 24px 24px;
+      font-family: "Noto Sans KR", "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
+      line-height: 1.74; word-break: keep-all; overflow-wrap: anywhere;
+    }
+    a { color: inherit; text-decoration: none; }
+    p, h1, h2, h3 { margin: 0; }
+    .container { width: min(var(--max), calc(100% - 48px)); margin: 0 auto; }
+    .read { max-width: var(--read); }
+
+    .topbar {
+      border-bottom: 1px solid var(--line); background: rgba(255,255,255,0.86);
+      color: var(--soft); font-family: var(--mono); font-size: 12px; font-weight: 500;
+    }
+    .topbar-inner { display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 16px; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.9); backdrop-filter: blur(18px);
+    }
+    .nav-inner { display: flex; min-height: 66px; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 900; line-height: 1.25; }
+    .brand-mark {
+      display: inline-grid; width: 38px; height: 38px; place-items: center;
+      border: 1px solid var(--line); background: var(--card);
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+    }
+    .brand small { display: block; margin-top: 2px; color: var(--soft); font-size: 12px; font-weight: 700; }
+    .nav-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .nav-link, .badge {
+      display: inline-flex; min-height: 40px; align-items: center; justify-content: center;
+      border: 1px solid var(--line); background: var(--page); color: var(--muted);
+      font-family: var(--mono); font-size: 13px; font-weight: 700; line-height: 1.25; padding: 6px 12px;
+    }
+    .nav-link:hover { border-color: var(--green); background: var(--tint-green); color: var(--green); }
+    .badge.green { border-color: transparent; background: var(--tint-green); color: var(--green); }
+    .badge.blue { border-color: transparent; background: var(--tint-blue); color: var(--blue); }
+    .badge.stone { border-color: transparent; background: var(--tint-stone); color: var(--stone); }
+
+    .hero { padding: 88px 0 64px; }
+    .hero .read { margin: 0 auto; text-align: center; }
+    .eyebrow { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 24px; }
+    h1 { font-size: clamp(38px, 5vw, 62px); font-weight: 900; line-height: 1.1; text-wrap: balance; }
+    .lead { margin-top: 24px; color: var(--muted); font-size: 19px; font-weight: 500; }
+    .main-message { display: block; margin-top: 20px; font-size: clamp(22px, 2.6vw, 30px); font-weight: 900; line-height: 1.35; }
+
+    section { padding: 64px 0; border-top: 1px solid var(--line-soft); }
+    section.soft { background: rgba(255,255,255,0.76); }
+    .section-head { max-width: var(--read); margin-bottom: 32px; }
+    .section-label {
+      display: inline-flex; margin-bottom: 12px; color: var(--soft);
+      font-family: var(--mono); font-size: 12px; font-weight: 900; text-transform: uppercase;
+    }
+    h2 { font-size: clamp(26px, 3vw, 38px); font-weight: 900; line-height: 1.22; text-wrap: balance; }
+    .section-head p { margin-top: 16px; color: var(--muted); font-size: 17px; font-weight: 500; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 32px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 32px; }
+
+    .card { border: 1px solid var(--line); background: var(--card); padding: 20px; }
+    .card strong { display: block; font-size: 18px; line-height: 1.42; }
+    .card span { display: block; margin-top: 8px; color: var(--muted); font-size: 15px; line-height: 1.62; }
+    .card .tag {
+      display: inline-flex; margin-bottom: 10px; padding: 2px 8px;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+    }
+    .tag.green { background: var(--tint-green); color: var(--green); }
+    .tag.blue { background: var(--tint-blue); color: var(--blue); }
+    .tag.stone { background: var(--tint-stone); color: var(--stone); }
+
+    .issue-list { display: grid; gap: 14px; margin-top: 32px; }
+    .issue-item { border-left: 4px solid var(--green); padding-left: 16px; }
+    .issue-item.blue { border-left-color: var(--blue); }
+    .issue-item.stone { border-left-color: var(--stone); }
+    .issue-item strong { display: block; font-size: 18px; line-height: 1.4; }
+    .issue-item span { display: block; margin-top: 4px; color: var(--muted); font-size: 15px; line-height: 1.62; }
+    .issue-item .before { color: var(--soft); text-decoration: line-through; }
+    .issue-item .after { color: var(--green); font-weight: 700; }
+
+    .table-wrap { overflow-x: auto; margin-top: 32px; border: 1px solid var(--line); background: var(--card); }
+    table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 15px; line-height: 1.62; }
+    th, td { border-bottom: 1px solid var(--line-soft); padding: 14px 18px; text-align: left; vertical-align: top; }
+    th { background: rgba(255,255,255,0.82); font-weight: 900; }
+    td { color: var(--muted); }
+    td:first-child { color: var(--ink); font-weight: 900; white-space: nowrap; }
+    tr:last-child td { border-bottom: 0; }
+
+    .check { font-family: var(--mono); font-weight: 700; white-space: nowrap; }
+    .check.done { color: var(--green); }
+    .check.todo { color: var(--red); }
+
+    .note {
+      margin-top: 32px; border: 1px solid var(--line); background: var(--card); padding: 24px;
+    }
+    .note h3 { font-size: 20px; font-weight: 900; line-height: 1.34; }
+    .note p, .note li { color: var(--muted); font-size: 16px; line-height: 1.7; }
+    .note p { margin-top: 10px; }
+    .note ul { margin: 12px 0 0; padding-left: 1.2rem; }
+    .note li + li { margin-top: 6px; }
+
+    .footer {
+      border-top: 1px solid var(--line); color: var(--soft);
+      font-family: var(--mono); font-size: 13px; padding: 40px 0 56px;
+    }
+
+    @media (max-width: 980px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 720px) {
+      .container { width: min(100% - 28px, var(--max)); }
+      .topbar { display: none; }
+      .nav-inner { flex-direction: column; align-items: flex-start; padding: 10px 0; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .hero { padding: 56px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span>한국지역난방공사 · AI Pioneer 5회차 해커톤</span>
+      <span>기획안 보강판 · 2026-07-08 (2일차 재점검 반영)</span>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark">RA</span>
+        <span>
+          위험성평가 통합 관리 시스템
+          <small>기획안 보강판 · 착수 준비</small>
+        </span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="#overview">과제 개요</a>
+        <a class="nav-link" href="#recheck">재점검 반영</a>
+        <a class="nav-link" href="#confirmed">확정 사항</a>
+        <a class="nav-link" href="#checklist">착수 체크리스트</a>
+        <a class="nav-link" href="#schedule">일정</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="container">
+      <div class="read">
+        <div class="eyebrow">
+          <span class="badge green">해커톤 과제</span>
+          <span class="badge blue">기획안 보강판</span>
+          <span class="badge stone">9월 착수</span>
+        </div>
+        <h1>위험성평가<br>통합 관리 시스템</h1>
+        <p class="lead">
+          엑셀·수기로 흩어진 위험성평가를 작성 → 결재 → 공유 → 이행 → 기록까지
+          하나의 시스템으로. 자사와 협력사가 함께 쓰는 법정 의무 대응 플랫폼.
+        </p>
+        <strong class="main-message">
+          지침서(절차서 R7)가 기준이고, 시스템은 그 기준을 그대로 담는다.
+        </strong>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="overview">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-label">01 · 과제 개요</span>
+          <h2>무엇을, 왜 만드는가</h2>
+          <p>
+            산업안전보건법 제36조는 위험성평가 실시와 3년 기록·보존을 의무화하고, 중대재해처벌법은
+            그 기록을 핵심 증빙으로 요구합니다. 현재 엑셀·수기 관리로는 복수 사업장·다수 협력사의
+            평가 이력과 개선조치 이행을 추적하기 어렵습니다. 회사 절차서(KDHC-SHP-04 R7)의
+            실무 기준을 그대로 담은 통합 시스템을 만듭니다.
+          </p>
+        </div>
+
+        <div class="grid-4">
+          <article class="card">
+            <span class="tag green">평가 작성</span>
+            <strong>4개 기법 평가서</strong>
+            <span>HAZOP·KRAS·JSA·CHARM을 공통 엔진 + 기법별 시트로. 4×4 매트릭스(Ⅴ~Ⅰ), 5점 이상 감소대책 필수 자동 판정.</span>
+          </article>
+          <article class="card">
+            <span class="tag blue">전자결재</span>
+            <strong>절차서 결재 계층</strong>
+            <span>차·팀장 작성 → 부장 확인·승인 → 안전관리관 보고 → 지사장 최종 승인. 협력사 제출·검토·확인 플로우 포함.</span>
+          </article>
+          <article class="card">
+            <span class="tag stone">이행·공유</span>
+            <strong>개선조치 + 열람 서명</strong>
+            <span>감소대책이 자동으로 조치 과제가 되고, 증빙 사진·확인 승인으로 닫힙니다. 근로자 모바일 열람·전자서명.</span>
+          </article>
+          <article class="card">
+            <span class="tag green">기록·관제</span>
+            <strong>3년 보존 + 대시보드</strong>
+            <span>불변 기록·감사 로그·증빙 패키지 출력. 본사/사업장/협력사별 이행 현황 대시보드.</span>
+          </article>
+        </div>
+
+        <div class="note">
+          <h3>사용자 (절차서 5장 기준 8개 페르소나)</h3>
+          <p>
+            안전보건관리책임자(지사장) · 본사 위험성평가 주관부서 · 안전관리관 · 관리감독자(부장) ·
+            관리감독자(차·팀장) · 근로자 · 협력사 관리자 · 협력사 근로자 —
+            결재·확인·보고 권한을 절차서 책임과 권한 그대로 매핑했습니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="soft" id="recheck">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-label">02 · 재점검 반영</span>
+          <h2>2일차에 배운 것으로 다시 본 세 갈래</h2>
+          <p>
+            1일차 기획안에서 비어 있거나 막연했던 데이터·기술·산출물 갈래를
+            오늘 배운 전처리·하네스·문서 작업으로 채우고 고쳤습니다.
+          </p>
+        </div>
+
+        <div class="issue-list">
+          <div class="issue-item">
+            <strong>데이터 — 전처리를 반영</strong>
+            <span>
+              <span class="before">1일차: "회사 절차서·서식 확보 필요" (형태 미정, 갈래 비어 있음)</span><br>
+              <span class="after">보강: HWPX 절차서·지침서를 zip+XML 파싱으로 텍스트 추출하는 전처리 확립 — 실제로 절차서 R7 전문을 추출해 PRD 정합화에 사용 완료.</span>
+              추출한 별표 데이터(공정분류 별표1.5, 요인분류 별표2.2, H-code 매핑 별표5.7, 위험성 기준 별표1.1)를 시스템 마스터 데이터로 변환할 계획.
+              평가서에 근로자 이름·서명이 들어가므로 샘플 데이터는 비식별화해 사용.
+            </span>
+          </div>
+          <div class="issue-item blue">
+            <strong>기술 — 하네스와 스킬을 반영</strong>
+            <span>
+              <span class="before">1일차: "AI 도구 활용" 수준의 막연한 기술 계획</span><br>
+              <span class="after">보강: Claude Code 하네스를 기획·개발 전 과정의 작업 도구로 확정 — PRD v2.0 → Rev1까지 절차서 대조·개정·깃 관리를 실제로 하네스로 수행.</span>
+              반복 작업은 스킬화 후보로: ① HWPX 전처리 ② PRD-지침서 기준 대조 점검 ③ 기준차이 비교표 생성. 산출물은 깃허브(ksw1727/day10)로 버전 관리.
+            </span>
+          </div>
+          <div class="issue-item stone">
+            <strong>산출물 — 문서 작업을 반영</strong>
+            <span>
+              <span class="before">1일차: PRD 초안 + HTML 기획안 (단발성 문서)</span><br>
+              <span class="after">보강: 반복 생산 가능한 문서 체계로 재정의 — PRD_origin_Rev1(결정 반영·변경부 표시), 기준차이 확인필요사항(4단 비교표), 본 기획안 보강판.</span>
+              발표 자료는 PPT 프롬프트로 기획안에서 반복 생성. 문서 간 근거 링크(절차서 조항 번호)를 남겨 추적 가능하게 유지.
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="confirmed">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-label">03 · 기획 확정 사항</span>
+          <h2>재점검에서 실제로 바뀐 기준</h2>
+          <p>
+            PRD와 지침서(절차서)의 기준 차이 9개를 전수 대조해 2026-07-08 전 항목을 결정했습니다.
+            핵심 원칙: <strong>실무 기준은 지침서, 지침서에 없는 법정 제도는 시스템이 지원.</strong>
+          </p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>항목</th><th>결정</th><th>비고</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>감소대책 기준선</td><td>위험성 <strong>5점 이상</strong> 필수 (결재 차단)</td><td>절차서 &lt;표4&gt; 기준, 내부 불일치(6↑ 주석)는 표 우선</td></tr>
+              <tr><td>등급 명칭·조치기한</td><td>절차서 채택 — Ⅴ 매우높음(즉시·작업중지) ~ Ⅰ 낮음(필요에 따라)</td><td>Ⅱ등급은 정기보수공사 또는 1년, 미입력 시 1년 디폴트</td></tr>
+              <tr><td>결재선</td><td>평가서=부장 전결 / 계획·보고=지사장 승인 / Ⅴ등급 상향=지사장</td><td>절차서 5장·8장 계층 그대로</td></tr>
+              <tr><td>JSA 실시 유형</td><td>최초·정기·수시 공용 (절차서 6.1)</td><td>신규 작업은 착수 전 수시 필수, 트리거 자동 연계</td></tr>
+              <tr><td>상시평가 (월·주)</td><td>PRD 채택 — 기능 구현 (고시 제15조 선택 제도)</td><td>지침서에 없어도 법정 제도로 지원</td></tr>
+              <tr><td>비도급 수시평가</td><td>기능 유지 + 경보 등 강제 장치 미적용</td><td>경보는 도급 수시에만</td></tr>
+              <tr><td>최초평가 기한</td><td>개설일 1개월 카운트다운 + 지침서 조건 충족 시 완료 처리</td><td>도급은 수급업체 제출 평가로 갈음 완료</td></tr>
+              <tr><td>수급업체 공유 수단</td><td>시스템 발행·열람 기록을 기본 수단으로</td><td>공문 병행은 운영 사항</td></tr>
+              <tr><td>기법 범위</td><td>4개 기법 유지, 체크리스트법·K-PSR·CA는 추후 선택</td><td>유일한 결정 보류 항목 (오픈 이슈 #11)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="note">
+          <h3>근거 문서 (깃허브 ksw1727/day10)</h3>
+          <ul>
+            <li><strong>PRD_origin_Rev1.md</strong> — 결정 반영 완료본 (수정부 🔵 파란색 표시)</li>
+            <li><strong>PRD-지침서_기준차이_확인필요사항.md</strong> — 9개 항목 4단 비교표(PRD/지침서/기타법령/최종결정)</li>
+            <li><strong>절차서_KDHC-SHP-04_안전보건위험성평가_R7.md</strong> — HWPX 전처리 추출본</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="soft" id="checklist">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-label">04 · 착수 체크리스트</span>
+          <h2>9월 착수까지 준비할 것</h2>
+          <p>
+            해커톤 본행사는 약 2달 뒤(9월)입니다. 착수 당일 데이터부터 찾거나 환경을 처음
+            만들지 않도록, 학습·데이터·환경·역할 네 갈래로 준비 항목을 정리했습니다.
+            <strong>담당이 비어 있는 항목은 팀 공유 때 반드시 채웁니다.</strong>
+          </p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>갈래</th><th>준비 항목</th><th>상태</th><th>담당</th></tr>
+            </thead>
+            <tbody>
+              <tr><td rowspan="4">학습</td><td>Claude Code 하네스 심화 — 워크플로·서브에이전트·스킬 작성</td><td class="check todo">☐ 착수 전</td><td>(담당 지정)</td></tr>
+              <tr><td>전처리 심화 — PDF·스캔본 OCR, 엑셀 서식 파싱</td><td class="check todo">☐ 착수 전</td><td>(담당 지정)</td></tr>
+              <tr><td>웹 앱 기본기 — DB 스키마·인증·배포 개념</td><td class="check todo">☐ 착수 전</td><td>(담당 지정)</td></tr>
+              <tr><td>도메인 — 절차서 별표 서식(평가표·체크리스트) 숙지</td><td class="check todo">☐ 착수 전</td><td>(담당 지정)</td></tr>
+              <tr><td rowspan="4">데이터</td><td>절차서 R7·KRAS 지침서 전처리(HWPX→텍스트)</td><td class="check done">☑ 완료</td><td>완료 (7/8)</td></tr>
+              <tr><td>별표 마스터 데이터화 — 공정분류·요인분류·H-code·위험성 기준을 CSV/JSON으로</td><td class="check todo">☐ 착수 전</td><td>(담당 지정)</td></tr>
+              <tr><td>실제 평가서 엑셀 샘플 확보 (사업장 운영본)</td><td class="check todo">☐ 착수 전</td><td>(담당 지정)</td></tr>
+              <tr><td>샘플 데이터 비식별화 — 근로자 이름·서명·연락처 마스킹</td><td class="check todo">☐ 착수 전</td><td>(담당 지정)</td></tr>
+              <tr><td rowspan="4">환경</td><td>Claude Code 설치·로그인 (팀 전원)</td><td class="check todo">☐ 일부 완료</td><td>각자</td></tr>
+              <tr><td>깃허브 리포·버전 관리 워크플로</td><td class="check done">☑ 완료</td><td>완료 (ksw1727/day10)</td></tr>
+              <tr><td>API 키·.env·계정 발급 후 한 번 끝까지 돌려 확인</td><td class="check todo">☐ 착수 전</td><td>(담당 지정)</td></tr>
+              <tr><td>배포 환경 결정 (프로토타입 호스팅 방식)</td><td class="check todo">☐ 착수 전</td><td>(담당 지정)</td></tr>
+              <tr><td rowspan="3">역할</td><td>기획·문서 총괄 / 데이터·전처리 / 개발·환경 / 발표 — 갈래별 담당 배정</td><td class="check todo">☐ 팀 공유 시</td><td>팀 결정</td></tr>
+              <tr><td>학습 항목마다 담당 붙이기 (목록만 두면 아무도 안 함)</td><td class="check todo">☐ 팀 공유 시</td><td>팀 결정</td></tr>
+              <tr><td>빈자리·겹침 점검 — 착수 기준으로 역할 초안 재확인</td><td class="check todo">☐ 팀 공유 시</td><td>팀 결정</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="note">
+          <h3>가장 자주 빠뜨리는 것 (교안 경고 반영)</h3>
+          <ul>
+            <li><strong>환경 · 키와 로그인</strong> — 착수 당일 API 키·설치에서 반나절이 날아갑니다. 착수 전에 한 번 끝까지 돌려 확인.</li>
+            <li><strong>데이터 · 미리 확보</strong> — 절차서 전처리는 끝났지만, 실제 평가서 엑셀 샘플은 아직입니다. 확보 + 비식별화까지가 준비 완료.</li>
+            <li><strong>학습·역할 · 담당까지</strong> — 위 표의 "(담당 지정)"을 팀 공유 때 전부 실명으로 바꾸는 것이 이 체크리스트의 완성 조건.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="schedule">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-label">05 · 일정</span>
+          <h2>착수까지의 마일스톤</h2>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>시기</th><th>할 일</th><th>산출물</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>7월 (완료)</td><td>PRD 지침서 정합화 · 기준 차이 9건 결정 · 기획안 보강</td><td>PRD_origin_Rev1, 기준차이 결정표, 본 기획안</td></tr>
+              <tr><td>7~8월</td><td>학습 갈래 소화 · 별표 마스터 데이터화 · 평가서 샘플 확보·비식별화</td><td>마스터 CSV/JSON, 비식별 샘플 데이터</td></tr>
+              <tr><td>8월 말</td><td>환경 리허설 — 계정·키·배포를 한 번 끝까지 · 역할 확정</td><td>환경 점검 기록, 역할표</td></tr>
+              <tr><td>9월 (착수)</td><td>해커톤 본행사 — Phase 1 코어(KRAS·JSA 작성→결재→공유·서명→조치) 구현</td><td>동작하는 프로토타입</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="note">
+          <h3>착수 완료 기준 (Phase 1 — PRD §10)</h3>
+          <p>
+            1개 파일럿 사업장에서 정기(KRAS)·협력사(JSA) 평가의
+            작성 → 결재 → 공유·서명 → 조치 완료 사이클이 시스템만으로 완결되고,
+            증빙 패키지가 출력되면 성공입니다.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      한국지역난방공사 AI Pioneer 5회차 해커톤 · 위험성평가 통합 관리 시스템 기획안 보강판 · 2026-07-08 ·
+      근거: PRD_origin_Rev1 / KDHC-SHP-04 절차서 R7 / 기준차이 확인필요사항(결정 완료)
+    </div>
+  </footer>
+</body>
+</html>
