@@ -14,9 +14,10 @@
     --accent: #1f5eff;
     --accent-soft: #eaf0ff;
     --ok: #2e9e5b;
+    --exist: #c9a227;
     --warn: #e8a13a;
     --high: #e05252;
-    --extreme: #b1271b;
+    --extreme: #8f1810;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -71,8 +72,8 @@
   .pill.in  { background:#e5f5ec; color:var(--ok); }
   .pill.out { background:#f3f4f6; color:#8a93a1; }
 
-  .grade { display:inline-block; min-width:52px; text-align:center; color:#fff; font-size:12px; font-weight:700; padding:2px 8px; border-radius:5px; }
-  .g1 { background: var(--ok); } .g2 { background: var(--warn); } .g3 { background: var(--high); } .g4 { background: var(--extreme); }
+  .grade { display:inline-block; min-width:78px; text-align:center; color:#fff; font-size:12px; font-weight:700; padding:2px 8px; border-radius:5px; }
+  .g1 { background: var(--ok); } .g2 { background: var(--exist); } .g3 { background: var(--warn); } .g4 { background: var(--high); } .g5 { background: var(--extreme); }
 
   /* 화면 흐름도 */
   .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 14px 0 6px; }
@@ -145,7 +146,20 @@
     <p class="desc">3일 안에 만들 첫 버전의 범위.</p>
 
     <h3>한 줄 목표</h3>
-    <p><strong>KRAS(빈도·강도법) 평가서 하나를 "작성 → 자동 위험도 계산 → 목록·상세 → 승인/반려 → 대시보드 집계"까지 웹에서 끝내는 것.</strong></p>
+    <p><strong>KRAS(빈도·강도법) 평가서 하나를 "작성 → 회사 표준 4×4 매트릭스로 자동 위험성 계산 → 목록·상세 → 승인/반려 → 대시보드 집계"까지 웹에서 끝내는 것.</strong></p>
+
+    <h3>회사 표준 위험성 결정 기준 (4×4, 전 기법 공통)</h3>
+    <p style="font-size:14px">발생빈도(1~4) × 발생강도(1~4) = 위험성(1~16). <strong>5점 이상은 개선조치 수립·시행이 의무</strong>다. HAZOP·KRAS·JSA·CHARM 4개 기법 모두 이 매트릭스를 공유하되, MVP는 KRAS만 구현한다.</p>
+    <div class="table-scroll">
+    <table>
+      <tr><th>위험성 점수</th><th>등급</th><th>조치 요구사항</th></tr>
+      <tr><td>13~16</td><td><span class="grade g5">매우 위험</span></td><td>즉시 개선조치 수립 및 시행</td></tr>
+      <tr><td>10~12</td><td><span class="grade g4">위험</span></td><td>빠른 시일 내에 개선조치 수립 및 시행</td></tr>
+      <tr><td>7~9</td><td><span class="grade g3">다소 위험</span></td><td>1개월 내에 개선조치 수립 및 시행</td></tr>
+      <tr><td>5~6</td><td><span class="grade g2">위험성 존재</span></td><td>개선조치 수립 및 시행 필요</td></tr>
+      <tr><td>1~4</td><td><span class="grade g1">허용 가능</span></td><td>개선조치 수립 및 시행 불필요</td></tr>
+    </table>
+    </div>
 
     <h3>포함 / 제외</h3>
     <div class="table-scroll">
@@ -156,9 +170,8 @@
         <td>
           <ul>
             <li>간단 로그인 (이름 선택 방식 — 작성자/승인자 구분용, 회원가입 없음)</li>
-            <li><strong>KRAS 평가서 작성</strong>: 공정/작업명, 유해·위험요인, 현재 조치, 빈도(1–3) × 강도(1–3) 선택 → 위험성 자동 계산·등급 색상
-              <span class="grade g1">1–2 낮음</span> <span class="grade g2">3–4 보통</span> <span class="grade g3">6 높음</span> <span class="grade g4">9 매우높음</span></li>
-            <li>위험성 3 이상 행에는 <strong>감소대책 입력 필수</strong> (미입력 시 제출 차단)</li>
+            <li><strong>KRAS 평가서 작성</strong>: 공정/작업명, 유해·위험요인, 현재 조치, 발생빈도(1–4) × 발생강도(1–4) 선택 → 위험성 자동 계산(위 표 기준 등급·색상 표시)</li>
+            <li>위험성 <strong>5점 이상</strong> 행에는 <strong>감소대책 입력 필수</strong> (미입력 시 제출 차단)</li>
             <li>평가서 목록 (상태 필터: 작성중 / 결재대기 / 승인 / 반려)</li>
             <li>평가서 상세 + <strong>승인/반려</strong> (반려 사유 필수)</li>
             <li>대시보드: 전체 건수, 상태별 건수, 고위험(6 이상) 항목 수</li>
@@ -349,7 +362,7 @@ risk-assessment/
         <ul>
           <li>Git 기본: <code>clone / branch / add / commit / push / pull</code>, PR 만들기·머지</li>
           <li>JSON 구조 읽고 쓰기 (객체·배열 중첩)</li>
-          <li><strong>도메인 지식</strong>: 위험성평가 5단계 절차, KRAS 빈도(1–3)×강도(1–3) 계산과 등급 기준, 감소대책 우선순위(제거·대체&gt;공학&gt;관리&gt;보호구) — PRD §5.3~5.4 읽기</li>
+          <li><strong>도메인 지식</strong>: 위험성평가 5단계 절차, 회사 표준 4×4 매트릭스(빈도1–4×강도1–4=위험성1–16)와 5단계 등급·조치기한 기준, 감소대책 우선순위(제거·대체&gt;공학&gt;관리&gt;보호구) — PRD §5.2.1, §5.3~5.4 읽기</li>
         </ul>
       </div>
       <div class="learn">
